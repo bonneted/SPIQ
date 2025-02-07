@@ -1,3 +1,5 @@
-side_loaded_plate/results
+side_loaded_plate/results_inverse
 side_loaded_plate/videos
-
+side_loaded_plate/dic_data
+side_loaded_plate/fem_data
+side_loaded_plate/fem_data/plate_nodes.csv
