@@ -13,19 +13,19 @@ parser = argparse.ArgumentParser(description='Physics Informed Neural Networks f
 
 parser.add_argument('--n_iter', type=int, default=int(1e10), help='Number of iterations')
 parser.add_argument('--log_every', type=int, default=1000, help='Log every n steps')
-parser.add_argument('--available_time', type=int, default=5, help='Available time in minutes')
+parser.add_argument('--available_time', type=int, default=2, help='Available time in minutes')
 parser.add_argument('--log_output_fields', nargs='+', default=['Ux', 'Uy', 'Sxx', 'Syy', 'Sxy'], help='Fields to log')
 parser.add_argument('--net_type', choices=['spinn', 'pfnn'], default='spinn', help='Type of network')
 parser.add_argument('--bc_type', choices=['hard', 'soft'], default='hard', help='Type of boundary condition')
 parser.add_argument('--mlp', choices=['mlp', 'modified_mlp'], default='mlp', help='Type of MLP for SPINN')
 parser.add_argument('--n_DIC', type=int, default=6, help='Number of DIC') # n_DIC**2 points
-parser.add_argument('--noise_magnitude', type=float, default=1e-6, help='Gaussian noise magnitude')
+parser.add_argument('--noise_magnitude', type=float, default=0, help='Gaussian noise magnitude')
 parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
 parser.add_argument('--u_0', type=float, default=1e-4, help='Displacement scaling factor')
 parser.add_argument('--loss_weights', nargs='+', type=float, default=[1,1,1,1,1,1e8,1e8], help='Loss weights (more on DIC points)')
 parser.add_argument('--lame_params', action='store_true', default=False, help='Use Lame parameters instead of E and nu')
 parser.add_argument('--params_iter_speed', nargs='+', type=float, default=[1,1], help='Scale iteration step for each parameter')
-parser.add_argument('--strain_DIC', action='store_true', default=True, help='Use strain instead of displacement for DIC points')
+parser.add_argument('--strain_DIC', action='store_true', default=False, help='Use strain instead of displacement for DIC points')
 args = parser.parse_args()
 
 n_iter = args.n_iter
@@ -236,8 +236,8 @@ else:
     DIC_data = solution_fn(X_DIC_input)[:,:2]
     DIC_data += np.random.normal(0, noise_magnitude, DIC_data.shape)
 
-    measure_Ux = dde.PointSetBC(X_DIC_input, DIC_data[:, 0:1], component=0)
-    measure_Uy = dde.PointSetBC(X_DIC_input, DIC_data[:, 1:2], component=1)
+    measure_Ux = dde.PointSetOperatorBC(X_DIC_input, DIC_data[:, 0:1], lambda x, f, x_np: f[0][:, 0:1])
+    measure_Uy = dde.PointSetOperatorBC(X_DIC_input, DIC_data[:, 1:2], lambda x, f, x_np: f[0][:, 1:2])
     bcs = [measure_Ux, measure_Uy]
 
 num_boundary = 0
