@@ -60,20 +60,15 @@ mu = E / (2 * (1 + nu))  # Lame's second parameter
 # Load
 pstress = 1.0
 
-
 sin = dde.backend.sin
 cos = dde.backend.cos
 stack = dde.backend.stack
-
-
-
 
 # Load geometry mapping
 nx=25
 ny=75
 dir_path = os.path.dirname(os.path.realpath(__file__))
 Xp = np.loadtxt(os.path.join(dir_path, f"../geometry/deep_notched_{nx}x{ny}.txt"))
-
 
 # Interpolate mapping
 X_map_points = Xp[:, 0].reshape((ny, nx)).T
@@ -145,13 +140,11 @@ def HardBC(x, f):
     return stack((Ux, Uy, Sxx, Syy, Sxy), axis=1)
     # return stack((Ux, Uy, Sxx, Syy, Sxy), axis=1)
 
-
 def jacobian(f, x, i, j):
     if dde.backend.backend_name == "jax":
         return dde.grad.jacobian(f, x, i=i, j=j)[0]  
     else:
         return dde.grad.jacobian(f, x, i=i, j=j)
-
 
 def pde(x, f):
     # x_mesh = jnp.meshgrid(x[:,0].ravel(), x[:,0].ravel(), indexing='ij')
