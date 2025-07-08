@@ -20,19 +20,19 @@ geom = dde.geometry.Rectangle([0, 0], [1, 1])
 BC_type = ["hard", "soft"][0]
 
 
-def boundary_left(x, on_boundary):
+def left(x, on_boundary):
     return on_boundary and dde.utils.isclose(x[0], 0.0)
 
 
-def boundary_right(x, on_boundary):
+def right(x, on_boundary):
     return on_boundary and dde.utils.isclose(x[0], 1.0)
 
 
-def boundary_top(x, on_boundary):
+def top(x, on_boundary):
     return on_boundary and dde.utils.isclose(x[1], 1.0)
 
 
-def boundary_bottom(x, on_boundary):
+def bottom(x, on_boundary):
     return on_boundary and dde.utils.isclose(x[1], 0.0)
 
 
@@ -53,14 +53,14 @@ def S_from_output(x, f,X):
 
     return stack((S_xx, S_yy), axis=1)
 
-ux_top_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 0], boundary_top)
-ux_bottom_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 0], boundary_bottom)
-uy_left_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 1], boundary_left)
-uy_bottom_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 1], boundary_bottom)
-uy_right_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 1], boundary_right)
-sxx_left_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: S_from_output(x, f, X)[:, 0], boundary_left)
-sxx_right_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: S_from_output(x, f, X)[:, 0], boundary_right)
-syy_top_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: S_from_output(x, f, X)[:, 1]-(lmbd + 2*mu)*Q*sin(np.pi*x[:,0:1]), boundary_top)
+ux_top_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 0], top)
+ux_bottom_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 0], bottom)
+uy_left_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 1], left)
+uy_bottom_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 1], bottom)
+uy_right_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: f[0][:, 1], right)
+sxx_left_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: S_from_output(x, f, X)[:, 0], left)
+sxx_right_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: S_from_output(x, f, X)[:, 0], right)
+syy_top_bc = dde.icbc.OperatorBC(geom, lambda x, f, X: S_from_output(x, f, X)[:, 1]-(lmbd + 2*mu)*Q*sin(np.pi*x[:,0:1]), top)
 
 bcs = [ux_top_bc, ux_bottom_bc, uy_left_bc, uy_bottom_bc, uy_right_bc] if BC_type == "soft" else []
 bcs += [
